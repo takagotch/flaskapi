@@ -58,6 +58,41 @@ if __name__ == "__main__":
 @app.route('/example/')
 def example():
   return {'requet data': request.data}
+
+@app.route('/example/')
+def example():
+  return {'hello': 'word'}
+  
+from flask_api import FlaskAPI
+app = FlaskAPI(__name__)
+
+
+
+class PlainTextParser(BaseParser):
+  """
+  """
+  media_type = 'text/plain'
+  def parse(self, stream, media_type, **options):
+    """
+    """
+    return stream.read().decode('utf8')
+ 
+app.config['DEFAULT_PARSERS'] = [
+  'flask.ext.api.parsers.JSONParser',
+  'flask.ext.api.parsers.URLEncodedParser',
+  'flask.ext.api.parsers.MultiPartParser'
+]
+
+from flastk.ext.api.decorators import set_parsers
+from flask.ext.api.parsers import JSONParser
+
+@app.route('/example_view/')
+@set_parsers(JSONParser, MyCustomXMLParser)
+def example():
+  return {
+    'example': 'Setting renderers on per-view basis',
+    'request data': request.data
+  }
 ```
 
 ```sh
@@ -65,9 +100,16 @@ python ./example.py
 curl -X GET http://127.0.0.1:5000/
 curl -X GET http://127.0.0.1:5000/1/
 curl -x PUT http://127.0.0.1:5000/1/-d text="flask api is teh awesomez"
+
+pip install Flask-API
 ```
 
 ```
+HTTP 200 OK
+Content-Type application/json
+
+{
+  "url": "http://127.0.0.1:5000/1/",
+  "text": "build the codez"
+}
 ```
-
-
